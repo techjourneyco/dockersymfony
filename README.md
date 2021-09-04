@@ -35,9 +35,13 @@ This is necessary to modify the volume files outside the Docker container.
 
 You can create a new project following these steps:
 
-1. Login into the container using this command: docker exec -it [container name] bash
-2. To new project go back to parent directory and execute the command: symfony new [project name].
-3. PHP Symfony Framework has your own test server. You can execute it with this command: symfony server:start
+1. Access the php container using this command: docker exec -it [container name] bash
+2. To  create a new project 
+2.1 Create a directory in (for example, app)
+2.2 Execute cd app.
+2.3 Execute the command: "symfony new ."
+
+PHP Symfony Framework has your own test server. You can execute it with this command: symfony server:start
 
 If the server execution doesn't have any trouble you can see the mesage:
 
@@ -75,13 +79,10 @@ This is the Visual studio launch.json configuration:
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Listen for XDebug",
+            "name": "Listen for Xdebug",
             "type": "php",
             "request": "launch",
-            "port": 9001,
-            "pathMappings": {
-                "/var/www/symfony": "${workspaceFolder}"
-            }
+            "port": 9003
         },
         {
             "name": "Launch currently open script",
@@ -89,13 +90,42 @@ This is the Visual studio launch.json configuration:
             "request": "launch",
             "program": "${file}",
             "cwd": "${fileDirname}",
-            "port": 9001
+            "port": 0,
+            "runtimeArgs": [
+                "-dxdebug.start_with_request=yes"
+            ],
+            "env": {
+                "XDEBUG_MODE": "debug,develop",
+                "XDEBUG_CONFIG": "client_port=${port}"
+            }
+        },
+        {
+            "name": "Launch Built-in web server",
+            "type": "php",
+            "request": "launch",
+            "runtimeArgs": [
+                "-dxdebug.mode=debug",
+                "-dxdebug.start_with_request=yes",
+                "-S",
+                "localhost:0"
+            ],
+            "program": "",
+            "cwd": "${workspaceRoot}",
+            "port": 9003,
+            "serverReadyAction": {
+                "pattern": "Development Server \\(http://localhost:([0-9]+)\\) started",
+                "uriFormat": "http://localhost:%s",
+                "action": "openExternally"
+            }
         }
     ]
 }
 ```
 
-The **pathMappings** parameter is related with the **volumes** parameter in docker-compose.yml and the **WORKDIR** parameter in Dockerfile. If you want to change the **volume** location you need to change these paramaters too.
+## Use MySQL container.
+This repository includes a MySQL's Docker image. If the container is running, you can access via any MySQL client, for example Squirrel SQL or MySQL Workbench via 127.0.0.1 ip and 3306 port.
+
+The communication between containers is through the "mysql" alias, the name of the service in docker-compose.yaml
 
 ## Import an existing project
 
