@@ -13,6 +13,7 @@ services:
       - 8000:8000
     networks:
       - techjourney
+
   mysql:
     build:
       context: .
@@ -27,3 +28,9 @@ services:
       - mysql-db-data:/var/lib/mysql 
     networks:
       - techjourney
+
+networks:
+   techjourney:
+
+volumes:
+   mysql-db-data:
